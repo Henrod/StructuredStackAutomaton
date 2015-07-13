@@ -1,0 +1,8 @@
+1,1 1,2 1,3 2,1 2,2	-> estados do autômato, por padrão o primeiro estado passado por máquina é o estado inicial
+y	-> mostrar rastreamento, 'n' para não mostrar
+a b c	-> símbolos do autômato
+-> sequências de produções
+1,1 a 1,2
+1,2 2 STACK 1,3
+2,1 b 2,2
+2,2 c RETURN
