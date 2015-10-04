@@ -7,18 +7,18 @@ import Components.Automaton;
 
 public class Main {
 	
-	static String input;	/* set of symbols to verify if it belongs to the machine language or not */
-	
 	public static void main(String[] args) throws IOException {
-		
-		//By convention, states are always referred in the formart: "submachine_id","state_id"
+		//By convention, states are always referred in the format: "submachine_id","state_id"
 		Automaton automaton = new Automaton();	
 		automaton.displayStatus();
 		
-		BufferedReader wordBuffer = new BufferedReader(new FileReader(new File("word.txt")));
-		String input = wordBuffer.readLine();	//read the sequence of symbols to be analyzes my the machine
-		System.out.println("--------Input = " + input + "--------\n");
+		BufferedReader wordBuffer = new BufferedReader(new FileReader(new File("WirthGrammarWord.txt")));
+		String inputs = wordBuffer.readLine();	//read the sequence of symbols to be analyzes my the machine
+		System.out.println("--------Input = " + inputs + "--------\n");
+		wordBuffer.close();
 		
-		automaton.analyzeSymbol(input);
+		//String[] input = inputs.split("//s+");
+		//for (String i : input) automaton.analyzeSymbol(i);
+		automaton.analyzeSymbol(inputs);
 	}
 }

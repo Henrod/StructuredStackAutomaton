@@ -2,7 +2,6 @@ package Components;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -34,7 +33,7 @@ public class Automaton {
 	boolean show_track;	/* show passengers inside the finite automaton machine (true) or only 
 						* the final result (false) */
 	
-	BufferedReader machineStructure; /* reads the txt file */
+	BufferedReader machineStructure; /* reads the text file */
 	
 	public Automaton() throws IOException{
 		submachineLinkedList = new SubmachineLinkedList();
@@ -51,9 +50,9 @@ public class Automaton {
 	}
 	
 	void createMachineStructure() throws IOException{
-		machineStructure = new BufferedReader(new FileReader(new File("machine.txt")));
+		machineStructure = new BufferedReader(new FileReader(new File("WirthGrammarMachine.txt")));
 		
-		//first, get the states from the first line and create states and submachines
+		//first, get the states from the first line and create states and sub machines
 		String[] states = machineStructure.readLine().split("\\s+");
 		//the first state is the initial state, by default
 		String[] separate = states[0].split(",");
@@ -118,24 +117,34 @@ public class Automaton {
 			Symbol input = null;
 			
 			//the first read, split[0], is always current_state
-			int state_id = Integer.parseInt(split[0].split(",")[1]); //get sub machine and state separated by a collon, so split and get the second one
-			int submachine_id = Integer.parseInt(split[0].split(",")[0]); //get sub machine and state separated by a collon, so split and get the first one
-			State current_state = new State(state_id, submachine_id);
+			int state_id = Integer.parseInt(split[0].split(",")[1]); //get sub machine and state separated by a colon, so split and get the second one
+			int submachine_id = Integer.parseInt(split[0].split(",")[0]); //get sub machine and state separated by a colon, so split and get the first one
+			
+			State current_state = stateLinkedList.getState(state_id, submachine_id);
 			
 			//the second read, split[1], is a symbol as input OR is the number of the sub machine to call OR is a RETURN
 			String symbol_or_submachine = split[1];
 			if(symbol_or_submachine.charAt(0) >= '0' && symbol_or_submachine.charAt(0) <= '9'){ //if it is a symbol, then save as next sub machine to call
 				Submachine next_submachine = submachineLinkedList.get_submachine((Integer.parseInt(symbol_or_submachine)));
 
-				int next_state_id = Integer.parseInt(split[3].split(",")[1]); //get sub machine and state separated by a collon, so split and get the second one
-				int next_submachine_id = Integer.parseInt(split[3].split(",")[0]); //get sub machine and state separated by a collon, so split and get the first one
-				
+				int next_state_id = Integer.parseInt(split[3].split(",")[1]); //get sub machine and state separated by a colon, so split and get the second one
+				int next_submachine_id = Integer.parseInt(split[3].split(",")[0]); //get sub machine and state separated by a colon, so split and get the first one
 				State next_state = new State(next_state_id, next_submachine_id);
 				// call sub machine only happens in a STACK command, then:
 				productionLinkedList.insert(new Production(current_state, null, next_state, "STACK", next_submachine));
 			} else { //if it is a symbol, save as input
+				//if is a RETURN, search if production already exists or insert
 				if(symbol_or_submachine.equals("RETURN")){
+					
+					current_state.finalState = true;
 					productionLinkedList.insert(new Production(current_state, null, null, "RETURN", null));
+					
+					/*Production this_production = productionLinkedList.get_production(current_state.submachine_id, current_state.state_id, null);
+					if (this_production == null)
+						productionLinkedList.insert(new Production(current_state, null, null, "RETURN", null));
+					else
+						this_production.command = "RETURN";*/
+					
 				} else{ //then it is a symbol in the alphabet
 					input = new Symbol(symbol_or_submachine);
 				}
@@ -145,8 +154,8 @@ public class Automaton {
 			//if STACK, it has already been resolved before
 			if(split.length >= 3){
 				if(!split[2].equals("STACK")){
-					int next_state_id = Integer.parseInt(split[2].split(",")[1]); //get sub machine and state separated by a collon, so split and get the second one
-					int next_submachine_id = Integer.parseInt(split[2].split(",")[0]); //get sub machine and state separated by a collon, so split and get the first one
+					int next_state_id = Integer.parseInt(split[2].split(",")[1]); //get sub machine and state separated by a colon, so split and get the second one
+					int next_submachine_id = Integer.parseInt(split[2].split(",")[0]); //get sub machine and state separated by a colon, so split and get the first one
 					State next_state = new State(next_state_id, next_submachine_id);
 					
 					//command is null because transactions inside same sub machine don't need it
@@ -173,21 +182,21 @@ public class Automaton {
 			if(show_track){
 				System.out.println("\n---------------------------------------------------------------------");
 				System.out.println("Word to be analyzed: " + input.substring(i, input.length()) + 
-						" at state " + current_state.submachine_id + "," + current_state.get_state_id());
+						" at state " + current_state.submachine_id + 
+						"," + current_state.get_state_id());
 				stack.displayStatus();
 			}
 			
 			String symbol = "";
-			if(i >= input.length()){
-				symbol = "E";
-			} else {
-				symbol = input.substring(i, i+1);
-			}
+			//if(i >= input.length()){
+			//	symbol = "E";
+			//} else {
+			if (i < input.length()) symbol = input.substring(i, i+1);
 			
 			Production production = productionLinkedList.get_production(
 					current_state.get_submachine_id(), 
 					current_state.get_state_id(),
-					new Symbol(symbol));
+					symbol);
 			
 			int j = i + 1;
 			while(production == null && j < input.length()){
@@ -196,23 +205,21 @@ public class Automaton {
 				production = productionLinkedList.get_production(
 						current_state.get_submachine_id(), 
 						current_state.get_state_id(),
-						new Symbol(symbol));
+						symbol);
 			}
 			i = j - 1;
-			
 			if(production != null){
 				if(show_track)
 					production.displayProduction();
 				
 				if(production.get_command() != null){	//if it is a transaction inside the same sub machine
 					if(production.get_command().equals("STACK")){
-						
 						stack.push(production.next_state);	//returning state
-						
-						current_state = production.next_submachine.get_initial_state();
-						
-					} else if(production.get_command().equals("RETURN")) {	//if it is a RETURN
-						
+						current_state = production.next_submachine.get_initial_state();		
+					} 
+					//if it is a RETURN and the word is finished
+					else if(production.state.finalState//production.get_command().equals("RETURN")
+							&& symbol.equals("E")) {	
 						current_state = stack.pop();
 						
 						if(current_state == null){ //if current state is null, stack is empty
@@ -229,6 +236,9 @@ public class Automaton {
 							
 						}
 						//i++;
+					} else {	//transaction inside the same sub machine
+						current_state = production.next_state;
+						i++;
 					}
 					
 				} else {	//if command is null, then it is a transaction inside the same sub machine
@@ -236,7 +246,8 @@ public class Automaton {
 					i++;
 				}
 				
-			} else {
+			}
+			else {
 				System.out.println("\nError: there is no transactions for this state. Machine finished and " +
 						"word does not belong to the language defined by this machine.");
 				return;

@@ -45,22 +45,26 @@ public class Production {
 			System.out.println("Current state: " + state.get_submachine_id() + "," + state.get_state_id() + 
 							" | Input symbol: "  + input.get_symbol() +
 							" | Next state: " + state.get_submachine_id() + "," + next_state.get_state_id() + 
-							" | Command: ---");
+							" | Command: ---" + 
+							" | Final: " + state.finalState);
 		} else if(command.equals("RETURN")){	
 			System.out.println("Current state: " + state.get_submachine_id() + "," + state.get_state_id() + 
 					" | Input symbol: --- "  +
 					" | Next state: --- " +  
-					" | Command: RETURN");
+					" | Command: RETURN" + 
+					" | Final: " + state.finalState);
 		} else if(input == null){	
 			System.out.println("Current state: " + state.get_submachine_id() + "," + state.get_state_id() +
 							" | Input symbol: ---" + 
 							" | Next state: " + next_submachine.submachine_id + "," + Automaton.submachineLinkedList.get_submachine(next_submachine.get_submachine_id()).get_initial_state().get_state_id() +  
-							" | Command: " + command);
+							" | Command: " + command + 
+							" | Final: " + state.finalState);
 		} else if(next_state == null){	
 			System.out.println("Current state: " + state.get_submachine_id() + "," + state.get_state_id() +
 							" | Input symbol: " + input.get_symbol() +  
 							" | Next state: ---" + 
-							" | Command: " + command);
+							" | Command: " + command + 
+							" | Final: " + state.finalState);
 		}
 	}
 	

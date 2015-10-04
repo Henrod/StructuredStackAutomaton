@@ -28,4 +28,12 @@ public class StateLinkedList {
 		
 		System.out.println("\n");
 	}
+	
+	public State getState(int id, int submachine) {
+		for (State current = firstState; current != null; current = current.next_state) 
+			if (current.state_id == id && current.submachine_id == submachine)
+				return current;
+		
+		return null;
+	}
 }
