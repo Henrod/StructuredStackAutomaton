@@ -1,1 +1,1 @@
-abbb
+IF a < b THEN a=b+a ;

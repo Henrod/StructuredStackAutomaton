@@ -174,6 +174,8 @@ public class Automaton {
 	}
 	
 	public void analyzeSymbol(String input){
+		Production production = null;
+		
 		if(show_track)
 			System.out.println("--------Word starting to be analyzed by the machine--------");
 		
@@ -181,82 +183,130 @@ public class Automaton {
 		while(i <= input.length()){
 			if(show_track){
 				System.out.println("\n---------------------------------------------------------------------");
-				System.out.println("Word to be analyzed: " + input.substring(i, input.length()) + 
-						" at state " + current_state.submachine_id + 
+				System.out.println("Word to be analyzed: \"" + input.substring(i, input.length()) + 
+						"\" at state " + current_state.submachine_id + 
 						"," + current_state.get_state_id());
 				stack.displayStatus();
 			}
 			
-			String symbol = "";
-			//if(i >= input.length()){
-			//	symbol = "E";
-			//} else {
-			if (i < input.length()) symbol = input.substring(i, i+1);
+			// search for a production STACK or RETURN.
+			production = productionLinkedList.get_production(
+					current_state.get_submachine_id(), 
+					current_state.get_state_id(),
+					null);
 			
-			Production production = productionLinkedList.get_production(
+			String symbol = "";
+			int const_i = i;
+			
+			// if there is no STACK, get next symbol of input.
+			int j = i;
+			if (production == null) {
+				System.out.println("1) i = " + i + " j = " + j);
+				while (j < input.length()) {
+					if (input.charAt(i) == ' ') j = ++i;
+					else if (input.charAt(j) == ' ') break;
+					else j++;
+				}
+				symbol = input.substring(i, j);
+			} else if (production.command.equals("RETURN")) { //if it got an RETURN, check if there is no other transaction
+				System.out.println("2) i = " + i + " j = " + j);
+				while (j < input.length()) {
+					//if (input.charAt(i) == ' '); j = ++i;
+					/*else*/ if (input.charAt(j) == ' ') break;
+					else j++;
+				}
+				symbol = input.substring(i, j);
+			}
+			
+			// search for a transaction with reserved word
+			production = productionLinkedList.get_production(
 					current_state.get_submachine_id(), 
 					current_state.get_state_id(),
 					symbol);
 			
-			int j = i + 1;
-			while(production == null && j < input.length()){
-				symbol = input.substring(i, ++j);
+			// if still has no transactions, search for one with the current character
+			if (production == null) {
+				
+				if (i >= input.length()) symbol = null; 
+				else symbol = String.valueOf(input.charAt(i++));
 				
 				production = productionLinkedList.get_production(
 						current_state.get_submachine_id(), 
 						current_state.get_state_id(),
 						symbol);
+				
+				if (production == null && input.charAt(const_i) == ' ') { //if still null, search for a RETURN production
+					production = productionLinkedList.get_production(
+							current_state.get_submachine_id(), 
+							current_state.get_state_id(),
+							null);
+					symbol = null;
+				}
+			} else {
+				i = j;
 			}
-			i = j - 1;
-			if(production != null){
+			
+			System.out.println("3) i = " + i + " j = " + j);
+			
+			System.out.println("Atom to be analyed: " + symbol); 
+			
+			if (production != null){
+				current_state = production.state;
+				
 				if(show_track)
 					production.displayProduction();
 				
 				if(production.get_command() != null){	//if it is a transaction inside the same sub machine
 					if(production.get_command().equals("STACK")){
 						stack.push(production.next_state);	//returning state
-						current_state = production.next_submachine.get_initial_state();		
+						current_state = production.next_submachine.get_initial_state();
 					} 
 					//if it is a RETURN and the word is finished
 					else if(production.state.finalState//production.get_command().equals("RETURN")
-							&& symbol.equals("E")) {	
+							&& symbol == null) {	
 						current_state = stack.pop();
 						
 						if(current_state == null){ //if current state is null, stack is empty
 							if(i >= input.length() - 1){	//is this case, all word has been read already, 
 														//then it is accepted by the machine
-								System.out.println("\nThe word " + input + " is ACCEPTED by the automaton" +
+								System.out.println("\nThe word \"" + input + "\" is ACCEPTED by the automaton" +
 										", so it belongs to the language.");
 								return;
 							} else {
 								System.out.println("\nThe automaton finished analyzes but the word was NOT " +
-										"accpeted, " + input + " does NOT belong to the language");
+										"accpeted, \"" + input + "\" does NOT belong to the language");
 								return;
 							}
 							
 						}
 						//i++;
-					} else {	//transaction inside the same sub machine
-						current_state = production.next_state;
-						i++;
-					}
+					}// else {	//transaction inside the same sub machine
+					//	System.out.println("1-Entrei aqui, certo?");
+					//	current_state = production.next_state;
+					//	i++;
+					//}
 					
 				} else {	//if command is null, then it is a transaction inside the same sub machine
 					current_state = production.next_state;
-					i++;
+					//i++;
 				}
 				
-			}
-			else {
+			} if (production == null) {
 				System.out.println("\nError: there is no transactions for this state. Machine finished and " +
 						"word does not belong to the language defined by this machine.");
 				return;
 			}	
 		}
 		
-		System.out.println("\nThe automaton finished analyzes in a not accepting state. Then, the word was NOT " +
-				"accpeted, " + input + " does NOT belong to the language");
-		return;
+		if (production.state.finalState) {
+			System.out.println("\nThe word \"" + input + "\" is ACCEPTED by the automaton" +
+					", so it belongs to the language.");
+			return;
+		} else {
+			System.out.println("\nThe automaton finished analyzes in a not accepting state. Then, the word was NOT " +
+					"accpeted, \"" + input + "\" does NOT belong to the language");
+			return;
+		}
 		
 	}
 }

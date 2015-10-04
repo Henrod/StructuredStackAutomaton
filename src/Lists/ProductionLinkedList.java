@@ -51,7 +51,7 @@ public class ProductionLinkedList {
 	
 	public Production get_production(int submachine_id, int state_id, String symbol){
 		for(Production current = firstProduction; current != null; current = current.next_production){
-			if (symbol.equals("E") && current.get_current_state().get_submachine_id() == submachine_id
+			if (symbol == null && current.get_current_state().get_submachine_id() == submachine_id
 					&& current.get_current_state().get_state_id() == state_id
 					&& current.get_current_state().finalState) { //empty transaction
 				return current;
