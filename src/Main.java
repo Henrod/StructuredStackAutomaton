@@ -13,7 +13,14 @@ public class Main {
 		automaton.displayStatus();
 		
 		BufferedReader wordBuffer = new BufferedReader(new FileReader(new File("WirthGrammarWord.txt")));
-		String inputs = wordBuffer.readLine();	//read the sequence of symbols to be analyzes my the machine
+		String inputs = ""; //read the sequence of symbols to be analyzes my the machine
+		String first = wordBuffer.readLine();
+		
+		while(first != null){
+			inputs += first;
+			first = wordBuffer.readLine();
+		}
+			
 		System.out.println("--------Input = " + inputs + "--------\n");
 		wordBuffer.close();
 		

@@ -124,7 +124,7 @@ public class Automaton {
 			
 			//the second read, split[1], is a symbol as input OR is the number of the sub machine to call OR is a RETURN
 			String symbol_or_submachine = split[1];
-			if(symbol_or_submachine.charAt(0) >= '0' && symbol_or_submachine.charAt(0) <= '9'){ //if it is a symbol, then save as next sub machine to call
+			if(prod.contains("STACK")){ //if has STACK, then save as next sub machine to call
 				Submachine next_submachine = submachineLinkedList.get_submachine((Integer.parseInt(symbol_or_submachine)));
 
 				int next_state_id = Integer.parseInt(split[3].split(",")[1]); //get sub machine and state separated by a colon, so split and get the second one
@@ -138,12 +138,6 @@ public class Automaton {
 					
 					current_state.finalState = true;
 					productionLinkedList.insert(new Production(current_state, null, null, "RETURN", null));
-					
-					/*Production this_production = productionLinkedList.get_production(current_state.submachine_id, current_state.state_id, null);
-					if (this_production == null)
-						productionLinkedList.insert(new Production(current_state, null, null, "RETURN", null));
-					else
-						this_production.command = "RETURN";*/
 					
 				} else{ //then it is a symbol in the alphabet
 					input = new Symbol(symbol_or_submachine);
@@ -201,7 +195,6 @@ public class Automaton {
 			// if there is no STACK, get next symbol of input.
 			int j = i;
 			if (production == null) {
-				System.out.println("1) i = " + i + " j = " + j);
 				while (j < input.length()) {
 					if (input.charAt(i) == ' ') j = ++i;
 					else if (input.charAt(j) == ' ') break;
@@ -209,10 +202,8 @@ public class Automaton {
 				}
 				symbol = input.substring(i, j);
 			} else if (production.command.equals("RETURN")) { //if it got an RETURN, check if there is no other transaction
-				System.out.println("2) i = " + i + " j = " + j);
 				while (j < input.length()) {
-					//if (input.charAt(i) == ' '); j = ++i;
-					/*else*/ if (input.charAt(j) == ' ') break;
+					if (input.charAt(j) == ' ') break;
 					else j++;
 				}
 				symbol = input.substring(i, j);
@@ -225,7 +216,7 @@ public class Automaton {
 					symbol);
 			
 			// if still has no transactions, search for one with the current character
-			if (production == null) {
+			if (production == null && symbol != null) {
 				
 				if (i >= input.length()) symbol = null; 
 				else symbol = String.valueOf(input.charAt(i++));
@@ -235,22 +226,26 @@ public class Automaton {
 						current_state.get_state_id(),
 						symbol);
 				
-				if (production == null && input.charAt(const_i) == ' ') { //if still null, search for a RETURN production
+				if (production == null) { //if still null, search for a RETURN production
 					production = productionLinkedList.get_production(
 							current_state.get_submachine_id(), 
 							current_state.get_state_id(),
 							null);
 					symbol = null;
+					
 				}
 			} else {
 				i = j;
 			}
 			
-			System.out.println("3) i = " + i + " j = " + j);
-			
 			System.out.println("Atom to be analyed: " + symbol); 
 			
 			if (production != null){
+				if(production.command != null)
+					if(production.command.equals("RETURN"))
+						i = const_i;
+				
+				
 				current_state = production.state;
 				
 				if(show_track)
@@ -279,16 +274,10 @@ public class Automaton {
 							}
 							
 						}
-						//i++;
-					}// else {	//transaction inside the same sub machine
-					//	System.out.println("1-Entrei aqui, certo?");
-					//	current_state = production.next_state;
-					//	i++;
-					//}
+					}
 					
 				} else {	//if command is null, then it is a transaction inside the same sub machine
 					current_state = production.next_state;
-					//i++;
 				}
 				
 			} if (production == null) {
