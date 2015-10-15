@@ -1,6 +1,6 @@
-1,0 1,2 1,1 2,0 2,4 2,1 3,0 3,2 3,1 3,4 3,6 3,8 3,10 3,12 3,13 3,16 3,17 3,18 3,20 3,22 3,23 3,24 3,27 3,28 3,30 3,33 3,34 3,36 3,37 3,40 3,41 3,42 3,46 3,47 3,1 4,0 4,4 4,5 4,3 4,7 4,1 5,0 5,1 6,0 6,4 6,1 7,0 7,4 7,5 7,8 7,13 7,14 7,1 8,0 8,4 8,1 9,0 9,4 9,1 10,0 10,2 10,3 10,4 10,5 10,1 11,0 11,2 11,3 11,9 11,12 11,13 11,1 12,0 12,1 12,1 
+1,0 1,2 1,1 2,0 2,4 2,1 3,0 3,2 3,1 3,4 3,6 3,8 3,10 3,12 3,13 3,16 3,17 3,18 3,20 3,24 3,25 3,26 3,31 3,34 3,33 3,37 3,40 3,41 3,43 3,44 3,47 3,48 3,49 3,53 3,54 3,57 3,58 3,59 3,60 3,61 3,62 3,1 4,0 4,4 4,5 4,3 4,7 4,1 5,0 5,1 6,0 6,4 6,1 7,0 7,4 7,5 7,8 7,13 7,14 7,1 8,0 8,4 8,1 9,0 9,4 9,1 10,0 10,2 10,3 10,4 10,5 10,1 11,0 11,2 11,3 11,9 11,12 11,13 11,1 12,0 12,1 12,1 
 y
-&& || > == < ELSE THEN Comparacao / * - + Termo 9 8 7 6 5 4 3 2 1 0 z y x w v u t s r q p o n m l k j i h g f e d c b a Expressao ] [ CALL Valor = INT[] } { , ) ( Identificador VOID FUNCTION INT Decisao IF ListaIdentificadores READ ListaExpressao PRINT Atribuicao LET ; Comando END SequenciaDeComandos Programa 
+&& || > == < ELSE THEN / * - + Termo 9 8 7 6 5 4 3 2 1 0 z y x w v u t s r q p o n m l k j i h g f e d c b a Expressao ] [ Comparacao WHILE CALL = } Valor GIVE { , INT[] ) ( Identificador VOID FUNCTION INT Decisao IF ListaIdentificadores READ ListaExpressao PRINT Atribuicao LET ; Comando END SequenciaDeComandos Programa 
 12,1 a 12,1
 12,1 b 12,1
 12,1 c 12,1
@@ -188,29 +188,39 @@ y
 4,5 ] 4,3
 4,4 12 STACK 4,5
 4,0 5 STACK 4,3
-3,1 = 3,33
+3,1 = 3,40
 3,1 RETURN
-3,47 5 STACK 3,46
-3,46 ) 3,1
-3,46 , 3,47
-3,42 5 STACK 3,46
-3,42 ) 3,1
-3,41 ( 3,42
-3,40 5 STACK 3,41
-3,37 12 STACK 3,36
-3,36 } 3,1
-3,36 , 3,37
-3,34 12 STACK 3,36
-3,33 { 3,34
-3,30 5 STACK 3,1
-3,28 } 3,1
-3,27 2 STACK 3,28
-3,24 5 STACK 3,22
-3,23 INT 3,24
-3,22 ) 3,18
-3,22 , 3,23
-3,20 5 STACK 3,22
-3,18 { 3,27
+3,62 } 3,1
+3,61 2 STACK 3,62
+3,60 { 3,61
+3,59 ) 3,60
+3,58 11 STACK 3,59
+3,57 ( 3,58
+3,54 12 STACK 3,53
+3,53 ) 3,1
+3,53 , 3,54
+3,49 12 STACK 3,53
+3,49 ) 3,1
+3,48 ( 3,49
+3,47 5 STACK 3,48
+3,44 12 STACK 3,43
+3,43 } 3,1
+3,43 , 3,44
+3,41 12 STACK 3,43
+3,40 { 3,41
+3,37 5 STACK 3,1
+3,33 GIVE 3,34
+3,33 } 3,1
+3,34 12 STACK 3,33
+3,31 2 STACK 3,33
+3,26 5 STACK 3,24
+3,25 INT[] 3,26
+3,25 INT 3,26
+3,24 ) 3,18
+3,24 , 3,25
+3,20 5 STACK 3,24
+3,18 { 3,31
+3,17 INT[] 3,20
 3,17 INT 3,20
 3,17 ) 3,18
 3,16 ( 3,17
@@ -223,8 +233,9 @@ y
 3,4 8 STACK 3,1
 3,1 RETURN
 3,2 4 STACK 3,1
-3,0 CALL 3,40
-3,0 INT[] 3,30
+3,0 WHILE 3,57
+3,0 CALL 3,47
+3,0 INT[] 3,37
 3,0 FUNCTION 3,12
 3,0 INT 3,10
 3,0 IF 3,8
