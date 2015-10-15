@@ -75,4 +75,10 @@ public class ProductionLinkedList {
 		return null;
 		
 	}
+	
+	public void printTrasactions(int state, int submachine) {
+		for (Production current  = firstProduction; current != null; current = current.next_production) 
+			if (current.get_current_state().state_id == state && current.get_current_state().submachine_id == submachine)
+				System.out.print(current.get_input().get_symbol() + ", ");
+	}
 }

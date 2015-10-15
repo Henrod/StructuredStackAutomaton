@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import semanticAnalyser.SemanticAnalyser;
 import Lists.ProductionLinkedList;
 import Lists.StateLinkedList;
 import Lists.SubmachineLinkedList;
@@ -14,26 +15,22 @@ import Lists.SymbolsLinkedList;
 public class Automaton {
 	static public SubmachineLinkedList submachineLinkedList;	/* contain all sub machines of the system. */
 	
-	StateLinkedList stateLinkedList;	/* contains all states of the system */
+	private static StateLinkedList stateLinkedList;	/* contains all states of the system */
 	
-	SymbolsLinkedList symbolsLinkedList; /* contains the alphabet of the language */
+	private static SymbolsLinkedList symbolsLinkedList; /* contains the alphabet of the language */
 	
-	ProductionLinkedList productionLinkedList;	/* the production that determines the language */
+	private static ProductionLinkedList productionLinkedList;	/* the production that determines the language */
 	
-	Stack stack;	/* data structured that holds states of return after calls for sub machine */
+	private static Stack stack;	/* data structured that holds states of return after calls for sub machine */
 	
-	boolean accepted;	/*false by default, and true when in an accepting state and the 
-						* stack is empty and the input has been all read. */
+	private static State current_state; /* state and sub machine current being processed */
 	
-	boolean error;		/* false by default, and true when there is no production to 
-						* execute input in the state; machine finalizes when encounters an error */
-	
-	State current_state; /* state and sub machine current being processed */
-	
-	boolean show_track;	/* show passengers inside the finite automaton machine (true) or only 
+	private static boolean show_track;	/* show passengers inside the finite automaton machine (true) or only 
 						* the final result (false) */
 	
-	BufferedReader machineStructure; /* reads the text file */
+	private static BufferedReader machineStructure; /* reads the text file */
+	
+	private static String curr_command = "";
 	
 	public Automaton() throws IOException{
 		submachineLinkedList = new SubmachineLinkedList();
@@ -44,9 +41,6 @@ public class Automaton {
 		
 		//create structure-------------------------------------------------------------------------
 		createMachineStructure();
-		
-		this.accepted = false;
-		this.error = false;
 	}
 	
 	void createMachineStructure() throws IOException{
@@ -57,7 +51,7 @@ public class Automaton {
 		//the first state is the initial state, by default
 		String[] separate = states[0].split(",");
 		State newState = new State(Integer.parseInt(separate[1]), Integer.parseInt(separate[0]));
-		this.current_state = newState;	//the first state passed is the initial state
+		current_state = newState;	//the first state passed is the initial state
 		stateLinkedList.insert(newState);
 		submachineLinkedList.insert(new Submachine(newState, Integer.parseInt(separate[0])));	//by default, the first state passed is the initial state
 		
@@ -67,9 +61,9 @@ public class Automaton {
 		//second, read if wants to see track or not
 		char want_to_see_track = machineStructure.readLine().charAt(0); 
 		if(want_to_see_track == 'y'){
-			this.show_track = true;
+			show_track = true;
 		} else if(want_to_see_track == 'n') {
-			this.show_track = false;
+			show_track = false;
 		}
 		
 		//third, read input symbols
@@ -196,14 +190,14 @@ public class Automaton {
 			int j = i;
 			if (production == null) {
 				while (j < input.length()) {
-					if (input.charAt(i) == ' ') j = ++i;
-					else if (input.charAt(j) == ' ') break;
+					if (input.charAt(i) == ' ' || input.charAt(i) == '	') j = ++i;
+					else if (input.charAt(j) == ' ' || input.charAt(i) == '	') break;
 					else j++;
 				}
 				symbol = input.substring(i, j);
 			} else if (production.command.equals("RETURN")) { //if it got an RETURN, check if there is no other transaction
 				while (j < input.length()) {
-					if (input.charAt(j) == ' ') break;
+					if (input.charAt(j) == ' ' || input.charAt(i) == '	') break;
 					else j++;
 				}
 				symbol = input.substring(i, j);
@@ -277,12 +271,25 @@ public class Automaton {
 					}
 					
 				} else {	//if command is null, then it is a transaction inside the same sub machine
+					curr_command = get_command(production.get_input().get_symbol());
+					SemanticAnalyser.generate_assembly(production.get_input().get_symbol(), curr_command);
 					current_state = production.next_state;
 				}
 				
 			} if (production == null) {
 				System.out.println("\nError: there is no transactions for this state. Machine finished and " +
 						"word does not belong to the language defined by this machine.");
+				System.out.print("Probably the following are missing: ");
+				
+				productionLinkedList.printTrasactions(current_state.state_id, current_state.submachine_id);
+				while (productionLinkedList.get_production(current_state.submachine_id, 
+						current_state.state_id, null) != null) 
+					if (productionLinkedList.get_production(current_state.submachine_id, 
+							current_state.state_id, null).state.finalState) {
+						current_state = stack.pop();
+						productionLinkedList.printTrasactions(current_state.state_id, current_state.submachine_id);
+					}
+				
 				return;
 			}	
 		}
@@ -290,6 +297,7 @@ public class Automaton {
 		if (production.state.finalState) {
 			System.out.println("\nThe word \"" + input + "\" is ACCEPTED by the automaton" +
 					", so it belongs to the language.");
+			
 			return;
 		} else {
 			System.out.println("\nThe automaton finished analyzes in a not accepting state. Then, the word was NOT " +
@@ -297,5 +305,41 @@ public class Automaton {
 			return;
 		}
 		
+	}
+	
+	private static String get_command(String command) {
+		switch(command) {
+		case "LET":
+			command = "LET";
+			break;
+		case "PRINT":
+			command = "PRINT";
+			break;
+		case "READ":
+			command = "READ";
+			break;
+		case "IF":
+			command = "IF";
+			break;
+		case "ELSE":
+			command = "ELSE";
+			break;
+		case "FUNCTION":
+			command = "FUNCTION";
+			break;
+		case "INT":
+			command = "INT";
+			break;
+		case "CALL":
+			command = "CALL";
+			break;
+		case "WHILE":
+			command = "WHILE";
+			break;
+		default:
+			command = curr_command;
+			break;
+		}
+		return command;
 	}
 }

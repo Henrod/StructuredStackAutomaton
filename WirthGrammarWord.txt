@@ -1,21 +1,2 @@
-FUNCTION VOID soma(INT a,INT b) {
- LET a = a+b;
- PRINT a
-};
-INT a = 21;
-INT b = 10;
-INT inteiro = 12;
-INT[] sequencia={1, 2, 0, a};
-LET a = b+2*a;
-LET b = a+1;
-LET sequencia[5]=10;
-CALL soma(b, inteiro);
-PRINT a, a+b/2, inteiro;
-READ a, b;
-IF a == b&& a>b THEN
- LET a=1;
- PRINT a
-ELSE
- LET b=inteiro;
- LET a=b-1
+IF a > b THEN PRINT a ELSE PRINT a
 END

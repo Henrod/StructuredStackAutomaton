@@ -1,0 +1,33 @@
+FUNCTION INT sort (INT[] a, INT n){
+	INT pos = 0;
+	INT menor = a[0];
+ 	WHILE (pos<n) {
+		INT i = pos;
+		WHILE (i<n) {
+			IF a[i] < a[pos] THEN 
+				CALL exchange(a, i, pos) 
+			ELSE 
+				PRINT a[pos];
+			LET i = i+1
+		};
+		LET pos = pos+1;
+		LET i = pos
+	}
+
+	GIVE n
+};
+
+FUNCTION VOID exchange (INT[] a, INT i, INT j) {
+	INT aux = a[i];
+	LET a[i] = a[j];
+	LET a[j] = aux
+};
+
+FUNCTION INT main(){
+	INT[] a={1, 3, 10, 29, 26};
+	CALL sort(a, 5)
+
+	GIVE 0
+}
+
+END
