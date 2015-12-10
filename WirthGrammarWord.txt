@@ -9,5 +9,4 @@ WHILE a == 0 {
 };
 
 PRINT a
-
 END
