@@ -1,13 +1,19 @@
-INT a = 0; 
+DECLARE INT f (INT b, INT c);
+DECLARE INT g (INT d);
 
-WHILE a == 0 {
-	IF a > 0 THEN {
-		LET a = 1
-	} ELSE {
-		LET a = 2
-	}
+INT a=1;
+INT e=a+1;
+
+CALL f(a, a);
+CALL g(e);
+
+FUNCTION INT f (INT b, INT c) {
+	LET b=0
+	GIVE a
 };
 
-PRINT a
+FUNCTION INT g (INT d) {
+	PRINT d
+}
 
 END

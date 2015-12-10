@@ -1,5 +1,6 @@
 package semanticAnalyser;
 
+import Components.Automaton;
 import Lists.SymbolsTable;
 
 /*
@@ -23,7 +24,7 @@ public class Assembly {
 	}
 
 	public static void add_constant(String name, int value) {
-		SymbolsTable.add_symbol(name);
+		SymbolsTable.add_symbol(name, Automaton.scope);
 		
 		Command new_first = new Command("K", "/" + convert_to_hexa(value), name);
 		new_first.next = first;

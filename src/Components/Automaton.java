@@ -5,13 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import semanticAnalyser.Assembly;
 import semanticAnalyser.SemanticAnalyser;
 import Lists.ProductionLinkedList;
 import Lists.StateLinkedList;
 import Lists.SubmachineLinkedList;
 import Lists.SymbolsLinkedList;
-
 
 public class Automaton {
 	static public SubmachineLinkedList submachineLinkedList;	/* contain all sub machines of the system. */
@@ -34,6 +32,8 @@ public class Automaton {
 	private static String curr_command = "";
 	
 	public static boolean ERROR = false;
+	
+	public static int scope = 0;
 	
 	public Automaton() throws IOException{
 		submachineLinkedList = new SubmachineLinkedList();
@@ -112,20 +112,20 @@ public class Automaton {
 		while(prod != null){
 			String[] split = prod.split("\\s+");
 			Symbol input = null;
-			
 			//the first read, split[0], is always current_state
 			int state_id = Integer.parseInt(split[0].split(",")[1]); //get sub machine and state separated by a colon, so split and get the second one
 			int submachine_id = Integer.parseInt(split[0].split(",")[0]); //get sub machine and state separated by a colon, so split and get the first one
 			
 			State current_state = stateLinkedList.getState(state_id, submachine_id);
-			
 			//the second read, split[1], is a symbol as input OR is the number of the sub machine to call OR is a RETURN
 			String symbol_or_submachine = split[1];
 			if(prod.contains("STACK")){ //if has STACK, then save as next sub machine to call
 				Submachine next_submachine = submachineLinkedList.get_submachine((Integer.parseInt(symbol_or_submachine)));
 
-				int next_state_id = Integer.parseInt(split[3].split(",")[1]); //get sub machine and state separated by a colon, so split and get the second one
-				int next_submachine_id = Integer.parseInt(split[3].split(",")[0]); //get sub machine and state separated by a colon, so split and get the first one
+				int next_state_id = Integer.parseInt(split[3].split(",")[1]); //get sub machine and state separated by a colon, 
+																				//so split and get the second one
+				int next_submachine_id = Integer.parseInt(split[3].split(",")[0]); //get sub machine and state separated by a colon, 
+																					//so split and get the first one
 				State next_state = new State(next_state_id, next_submachine_id);
 				// call sub machine only happens in a STACK command, then:
 				productionLinkedList.insert(new Production(current_state, null, next_state, "STACK", next_submachine));
@@ -140,22 +140,21 @@ public class Automaton {
 					input = new Symbol(symbol_or_submachine);
 				}
 			}
-			
 			//the third read can be a command STACK or the next state of the transition
 			//if STACK, it has already been resolved before
 			if(split.length >= 3){
 				if(!split[2].equals("STACK")){
-					int next_state_id = Integer.parseInt(split[2].split(",")[1]); //get sub machine and state separated by a colon, so split and get the second one
-					int next_submachine_id = Integer.parseInt(split[2].split(",")[0]); //get sub machine and state separated by a colon, so split and get the first one
+					int next_state_id = Integer.parseInt(split[2].split(",")[1]); //get sub machine and state separated by a colon, 
+																					//so split and get the second one
+					int next_submachine_id = Integer.parseInt(split[2].split(",")[0]); //get sub machine and state separated by a colon, 
+																						//so split and get the first one
 					State next_state = new State(next_state_id, next_submachine_id);
 					
 					//command is null because transactions inside same sub machine don't need it
 					//next sub machine is null because it is the same, only changes when operations is the stack
 					productionLinkedList.insert(new Production(current_state, input, next_state, null, null));
 				}
-			}
-			
-			prod = machineStructure.readLine();
+			} prod = machineStructure.readLine();
 		}
 	}
 	
@@ -337,13 +336,25 @@ public class Automaton {
 			command = "FUNCTION";
 			break;
 		case "INT":
-			command = "INT";
+			if 		(curr_command.equals("FUNCTION")) command = "FUNCTION";
+			else if (curr_command.equals("DECLARE")) command = "DECLARE";
+			else command = "INT";
 			break;
 		case "CALL":
 			command = "CALL";
 			break;
 		case "WHILE":
 			command = "WHILE";
+			break;
+		case "GIVE":
+			command = "FUNCTION";
+			break;
+		case "DECLARE":
+			command = "DECLARE";
+			break;
+		case ";":
+			if (curr_command.equals(("DECLARE"))) command = ";";
+			else command = curr_command;
 			break;
 		default:
 			command = curr_command;
