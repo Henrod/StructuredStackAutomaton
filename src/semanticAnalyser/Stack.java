@@ -24,8 +24,10 @@ public class Stack {
 	}
 	
 	public static void print() {
+		System.out.println("_______PILHA_______");
 		for (Level curr = top; curr != null; curr = curr.next)
-			System.out.println("___________" + curr.operator + " " + curr.operand + "___________");
+			System.out.println("| " + curr.operator + " " + curr.operand + " |");
+		System.out.println("___________________");
 	}
 	
 	private static class Level {

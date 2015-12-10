@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import semanticAnalyser.Assembly;
 import semanticAnalyser.SemanticAnalyser;
 import Lists.ProductionLinkedList;
 import Lists.StateLinkedList;
@@ -31,6 +32,8 @@ public class Automaton {
 	private static BufferedReader machineStructure; /* reads the text file */
 	
 	private static String curr_command = "";
+	
+	public static boolean ERROR = false;
 	
 	public Automaton() throws IOException{
 		submachineLinkedList = new SubmachineLinkedList();
@@ -169,6 +172,9 @@ public class Automaton {
 		
 		int i = 0;
 		while(i <= input.length()){
+			semanticAnalyser.Stack.print();
+			
+			
 			if(show_track){
 				System.out.println("\n---------------------------------------------------------------------");
 				System.out.println("Word to be analyzed: \"" + input.substring(i, input.length()) + 
@@ -264,6 +270,7 @@ public class Automaton {
 							} else {
 								System.out.println("\nThe automaton finished analyzes but the word was NOT " +
 										"accpeted, \"" + input + "\" does NOT belong to the language");
+								ERROR = true;
 								return;
 							}
 							
@@ -289,22 +296,24 @@ public class Automaton {
 						current_state = stack.pop();
 						productionLinkedList.printTrasactions(current_state.state_id, current_state.submachine_id);
 					}
-				
-				return;
-			}	
+				ERROR = true;
+			}
+			
+			if (ERROR) {
+				System.out.println("OCORREU UM ERRO!!!!!");
+				return; 
+			}
 		}
 		
 		if (production.state.finalState) {
 			System.out.println("\nThe word \"" + input + "\" is ACCEPTED by the automaton" +
 					", so it belongs to the language.");
-			
 			return;
 		} else {
 			System.out.println("\nThe automaton finished analyzes in a not accepting state. Then, the word was NOT " +
 					"accpeted, \"" + input + "\" does NOT belong to the language");
-			return;
+			ERROR = true;
 		}
-		
 	}
 	
 	private static String get_command(String command) {

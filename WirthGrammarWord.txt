@@ -1,2 +1,13 @@
-IF a > b THEN PRINT a ELSE PRINT a
+INT a = 0; 
+
+WHILE a == 0 {
+	IF a > 0 THEN {
+		LET a = 1
+	} ELSE {
+		LET a = 2
+	}
+};
+
+PRINT a
+
 END

@@ -28,6 +28,7 @@ public class Main {
 		//String[] input = inputs.split("//s+");
 		//for (String i : input) automaton.analyzeSymbol(i);
 		automaton.analyzeSymbol(inputs);
-		Assembly.print_assembly();
+		if (!Automaton.ERROR)
+			Assembly.print_assembly();
 	}
 }
