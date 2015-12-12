@@ -1,4 +1,4 @@
-package semanticAnalyser;
+package semanticAnalyzer;
 
 import Components.Automaton;
 import Lists.SymbolsTable;

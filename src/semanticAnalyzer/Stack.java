@@ -1,4 +1,4 @@
-package semanticAnalyser;
+package semanticAnalyzer;
 
 public class Stack {
 
@@ -23,13 +23,13 @@ public class Stack {
 		return top == null;
 	}
 
-	public static void print() {
+	/*public static void print() {
 		System.out.println("_______PILHA_______");
 		for (Level curr = top; curr != null; curr = curr.next)
 			System.out
 					.println("| " + curr.operator + " " + curr.operand + " |");
 		System.out.println("___________________");
-	}
+	}*/
 
 	public static boolean contains(String word) {
 		for (Level curr = top; curr != null; curr = curr.next)

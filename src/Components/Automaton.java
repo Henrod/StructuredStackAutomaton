@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import semanticAnalyser.SemanticAnalyser;
+import semanticAnalyzer.SemanticAnalyzer;
 import Lists.ProductionLinkedList;
 import Lists.StateLinkedList;
 import Lists.SubmachineLinkedList;
@@ -171,9 +171,6 @@ public class Automaton {
 		
 		int i = 0;
 		while(i <= input.length()){
-			semanticAnalyser.Stack.print();
-			
-			
 			if(show_track){
 				System.out.println("\n---------------------------------------------------------------------");
 				System.out.println("Word to be analyzed: \"" + input.substring(i, input.length()) + 
@@ -244,7 +241,6 @@ public class Automaton {
 					if(production.command.equals("RETURN"))
 						i = const_i;
 				
-				
 				current_state = production.state;
 				
 				if(show_track)
@@ -278,7 +274,7 @@ public class Automaton {
 					
 				} else {	//if command is null, then it is a transaction inside the same sub machine
 					curr_command = get_command(production.get_input().get_symbol());
-					SemanticAnalyser.generate_assembly(production.get_input().get_symbol(), curr_command);
+					SemanticAnalyzer.generate_assembly(production.get_input().get_symbol(), curr_command);
 					current_state = production.next_state;
 				}
 				

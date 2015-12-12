@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import semanticAnalyser.Assembly;
+import semanticAnalyzer.Assembly;
 import Components.Automaton;
 
 public class Main {

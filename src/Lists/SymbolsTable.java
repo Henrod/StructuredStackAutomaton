@@ -35,11 +35,11 @@ public class SymbolsTable {
 	}
 	
 	public static void print() {
-		System.out.print("lintin ");
-		for (Node curr = first; curr != null; curr = curr.next)
-			System.out.print(curr.name + "," + curr.label + " ");
-		System.out.print("scope " + Automaton.scope);
-		System.out.println(" ");
+		//System.out.print("lintin ");
+		//for (Node curr = first; curr != null; curr = curr.next)
+		//	System.out.print(curr.name + "," + curr.label + " ");
+		//System.out.print("scope " + Automaton.scope);
+		//System.out.println(" ");
 	}
 	
 	private static class Node {

@@ -1,9 +1,9 @@
-package semanticAnalyser;
+package semanticAnalyzer;
 
 import Components.Automaton;
 import Lists.SymbolsTable;
 
-public class SemanticAnalyser {
+public class SemanticAnalyzer {
 
 	/*
 	 * boolean indicates if next symbol will be pushed or analyzed in arithmetic
@@ -22,8 +22,6 @@ public class SemanticAnalyser {
 	private static boolean first_function = true, name_of_the_function = true;
 
 	public static void generate_assembly(String code, String command) {
-		SymbolsTable.print();
-		
 		switch (command) {
 		case "LET":
 			generate_assembly_let(code);
@@ -47,8 +45,7 @@ public class SemanticAnalyser {
 			if (!second_label.equals("")) {
 				Assembly.add_command("", "", second_label);
 				second_label = "";
-			}
-			break;
+			} break;
 		case "INT":
 			generate_assembly_int(code);
 			break;
@@ -124,8 +121,8 @@ public class SemanticAnalyser {
 			break;
 		}
 
-		Assembly.print_last();
-		Stack.print();
+		//Assembly.print_last();
+		//Stack.print();
 	}
 	
 	private static void generate_assembly_call(String code) {
@@ -146,10 +143,13 @@ public class SemanticAnalyser {
 				Assembly.add_command("LD", command[1], "");
 				Assembly.add_command("SC", "Push", "");
 			} 
-			command = Stack.pop();
-			Assembly.add_command("SC", command[1], "");
-			Assembly.add_command("", "", "LABEL" + label);
-			returning_address = "LABEL" + label++;
+			
+			if (!Stack.isEmpty()) {
+				command = Stack.pop();
+				Assembly.add_command("SC", command[1], "");
+				Assembly.add_command("", "", "LABEL" + label);
+				returning_address = "LABEL" + label++;
+			}
 			
 			break;
 		default:
@@ -192,7 +192,7 @@ public class SemanticAnalyser {
 			Assembly.add_command("", "", first_label);
 			first_label = "";
 			
-			while (!Stack.peak()[0].equals("FUNCTION")) {
+			while (!Stack.isEmpty() && !Stack.peak()[0].equals("FUNCTION")) {
 				command = Stack.pop();
 				Assembly.add_command(command[0], command[1], command[2]);
 			}
@@ -217,7 +217,7 @@ public class SemanticAnalyser {
 				} else if (Stack.peak()[0].equals("FUNCTION")) {
 					Stack.pop();
 				} else {
-					command = semanticAnalyser.Stack.pop();
+					command = semanticAnalyzer.Stack.pop();
 					Assembly.add_command(command[0], command[1], "");
 				}
 			}
@@ -268,8 +268,8 @@ public class SemanticAnalyser {
 			break;
 		}
 
-		Assembly.print_last();
-		Stack.print();
+		//Assembly.print_last();
+		//Stack.print();
 	}
 
 	private static void generate_assembly_while(String code) {
@@ -418,8 +418,8 @@ public class SemanticAnalyser {
 			break;
 		}
 
-		Assembly.print_last();
-		Stack.print();
+		//Assembly.print_last();
+		//Stack.print();
 
 	}
 
@@ -445,7 +445,7 @@ public class SemanticAnalyser {
 							|| Stack.peak()[0].equals("+")) {
 						get_from_stack();
 					} else {
-						command = semanticAnalyser.Stack.pop();
+						command = semanticAnalyzer.Stack.pop();
 						Assembly.add_command(command[0], command[1], "");
 					}
 				}
@@ -517,9 +517,7 @@ public class SemanticAnalyser {
 				}
 			} else if (get_next_symbol) {
 				Automaton.ERROR = SymbolsTable.symbol_exists(code);
-
-				System.out.println("SERA QUE EH AQUI??? " + code);
-				
+	
 				Assembly.add_constant(code, 0);
 				SymbolsTable.add_symbol(code, Automaton.scope);
 				Stack.push("MM", code, "");
@@ -528,8 +526,8 @@ public class SemanticAnalyser {
 			break;
 		}
 
-		Assembly.print_last();
-		Stack.print();
+		//Assembly.print_last();
+		//Stack.print();
 	}
 
 	private static void generate_assembly_if(String code) {
@@ -589,7 +587,7 @@ public class SemanticAnalyser {
 					} else if (Stack.peak()[0].equals("WHILE")) {
 						break;
 					} else {
-						command = semanticAnalyser.Stack.pop();
+						command = semanticAnalyzer.Stack.pop();
 						Assembly.add_command(command[0], command[1], "");
 					}
 				}
@@ -633,7 +631,6 @@ public class SemanticAnalyser {
 																				// ">"
 					Assembly.add_command(command[0], command[1], "");
 					second_label = command[1];
-					System.out.println("SEGUNDO LABEL EH " + second_label);
 				} else { // meaning operation is "<" or "=="
 					Assembly.add_command(command[0], command[1], "");
 					first_label = command[1];
@@ -665,9 +662,6 @@ public class SemanticAnalyser {
 					} else {
 						Automaton.ERROR = !SymbolsTable.symbol_exists(code);
 
-						System.out.println("DEU MATCH????? "
-								+ code.matches("-?\\d+(\\.\\d+)?"));
-
 						Assembly.add_command("LD", code, "");
 					}
 				}
@@ -679,8 +673,8 @@ public class SemanticAnalyser {
 			break;
 		}
 
-		Assembly.print_last();
-		Stack.print();
+		//Assembly.print_last();
+		//Stack.print();
 
 	}
 
@@ -716,18 +710,19 @@ public class SemanticAnalyser {
 			start_exp = false;
 			while (!Stack.isEmpty()) {
 				if (Stack.peak()[0].equals("IF")
-						|| Stack.peak()[0].equals("WHILE"))
+						|| Stack.peak()[0].equals("WHILE")
+						|| Stack.peak()[0].equals("FUNCTION"))
 					break;
 
 				if (Stack.peak()[0].equals("-") || Stack.peak()[0].equals("+")) {
 					get_from_stack();
 				} else {
-					command = semanticAnalyser.Stack.pop();
+					command = semanticAnalyzer.Stack.pop();
 					Assembly.add_command(command[0], command[1], "");
 				}
 			}
 			if (code.equals(",")) {
-				semanticAnalyser.Stack.push("SC", "Print", "");
+				semanticAnalyzer.Stack.push("SC", "Print", "");
 				start_exp = true;
 			}
 
@@ -737,6 +732,10 @@ public class SemanticAnalyser {
 					command = Stack.pop();
 					third_label = command[2];
 					Assembly.add_command("JP", command[1], "");
+				} else if (!Stack.isEmpty() && Stack.peak()[0].equals("FUNCTION")) {
+					command = Stack.pop();
+					third_label = command[2];
+					Assembly.add_command("JP", third_label, "");
 				}
 
 				Assembly.add_command("", "", third_label);
@@ -826,21 +825,23 @@ public class SemanticAnalyser {
 				start_exp = false;
 				while (!Stack.isEmpty()) {
 					if (Stack.peak()[0].equals("IF")
-							|| Stack.peak()[0].equals("WHILE"))
+							|| Stack.peak()[0].equals("WHILE")
+							|| Stack.peak()[0].equals("FUNCTION"))
 						break;
 
 					if (Stack.peak()[0].equals("-")
 							|| Stack.peak()[0].equals("+")) {
 						get_from_stack();
 					} else {
-						command = semanticAnalyser.Stack.pop();
+						command = semanticAnalyzer.Stack.pop();
 						Assembly.add_command(command[0], command[1], "");
 					}
 				}
 
 				if (code.equals("}")) {
 					Automaton.scope--;
-					if (!Stack.isEmpty() && Stack.peak()[0].equals("WHILE")) {
+					if (!Stack.isEmpty() && (Stack.peak()[0].equals("WHILE")
+											|| Stack.peak()[0].equals("FUNCTION"))) {
 						command = Stack.pop();
 						third_label = command[2];
 						Assembly.add_command("JP", command[1], "");
@@ -910,8 +911,8 @@ public class SemanticAnalyser {
 			break;
 		}
 
-		Assembly.print_last();
-		Stack.print();
+		//Assembly.print_last();
+		//Stack.print();
 
 	}
 

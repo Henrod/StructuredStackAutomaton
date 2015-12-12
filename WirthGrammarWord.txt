@@ -1,19 +1,35 @@
-DECLARE INT f (INT b, INT c);
-DECLARE INT g (INT d);
+INT a=0;
+INT b=a+8;
 
-INT a=1;
-INT e=a+1;
+DECLARE INT f (INT c, INT d, INT e);
+DECLARE VOID h ();
 
-CALL f(a, a);
-CALL g(e);
+READ b;
+INT g=9;
 
-FUNCTION INT f (INT b, INT c) {
-	LET b=0
-	GIVE a
+WHILE g > 0 {
+	IF a < b THEN {
+		READ g;
+		CALL f (a, g, g);
+		LET a=b*(3)
+	} ELSE {
+		CALL h(void);
+		PRINT g;
+		LET a=b/(3)
+	}
 };
 
-FUNCTION INT g (INT d) {
-	PRINT d
+CALL f(a, b, g);
+
+FUNCTION VOID h () {
+	LET a=a*(a+b-2)
+};
+
+FUNCTION INT f (INT c, INT d, INT e) {
+	LET c=c+d+e;
+	PRINT c
+
+	GIVE c
 }
 
 END
